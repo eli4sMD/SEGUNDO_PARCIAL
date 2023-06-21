@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0.33
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=my-secret-pw
+      - MYSQL_DATABASE=mydatabase
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb-data:/data/db
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - mysql
+      - mongodb
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=my-secret-pw
+      - MYSQL_DATABASE=mydatabase
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+
+volumes:
+  mysql-data:
+  mongodb-data:
